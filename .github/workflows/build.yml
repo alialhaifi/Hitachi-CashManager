@@ -1,0 +1,35 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.2'
+        arch: 'win64_mingw64'
+
+    - name: Configure CMake
+      run: cmake -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=$env:Qt6_DIR
+
+    - name: Build Project
+      run: cmake --build build --config Release
+
+    - name: Deploy Qt Dependencies
+      run: |
+        windeployqt build/CashManager.exe --no-compiler-runtime
+
+    - name: Upload Executable Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: CashManager-Windows-Executable
+        path: build/
