@@ -18,3 +18,4 @@ target_link_libraries(CashManager PRIVATE
     Qt6::Widgets
     Qt6::Network
 )
+set_target_properties(CashManager PROPERTIES WIN32_EXECUTABLE TRUE)
