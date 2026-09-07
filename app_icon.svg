@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- خلفية دائرية زرقاء احترافية -->
+  <rect width="512" height="512" rx="100" fill="#0078D4"/>
+  
+  <!-- جسم آلة عد النقود -->
+  <rect x="96" y="140" width="320" height="240" rx="20" fill="#2D3748"/>
+  <rect x="116" y="160" width="280" height="200" rx="12" fill="#4A5568"/>
+  
+  <!-- شاشة العرض الرقمية (LCD) -->
+  <rect x="140" y="180" width="232" height="60" rx="8" fill="#1A202C"/>
+  <text x="256" y="222" font-family="'Segoe UI', sans-serif" font-size="32" font-weight="bold" fill="#00E676" text-anchor="middle">100 Pcs</text>
+  
+  <!-- فتحة خروج ودخول الأوراق النقدية -->
+  <rect x="140" y="260" width="232" height="12" rx="4" fill="#1A202C"/>
+  <rect x="140" y="320" width="232" height="16" rx="4" fill="#2D3748"/>
+  
+  <!-- ورقة نقدية خارجة من الآلة (باللون الأخضر) -->
+  <rect x="160" y="280" width="192" height="55" rx="6" fill="#38A169" stroke="#2F855A" stroke-width="3"/>
+  <circle cx="256" cy="307" r="14" fill="#48BB78"/>
+  <text x="180" y="315" font-family="sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">$</text>
+  <text x="320" y="315" font-family="sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF">$</text>
+  
+  <!-- الأزرار السفلية -->
+  <circle cx="160" cy="355" r="8" fill="#E53E3E"/>
+  <circle cx="190" cy="355" r="8" fill="#ECC94B"/>
+  <circle cx="220" cy="355" r="8" fill="#4299E1"/>
+  
+  <!-- قواعد الآلة -->
+  <rect x="120" y="380" width="50" height="16" rx="4" fill="#1A202C"/>
+  <rect x="342" y="380" width="50" height="16" rx="4" fill="#1A202C"/>
+</svg>
