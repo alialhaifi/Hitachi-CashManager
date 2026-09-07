@@ -24,19 +24,22 @@ public:
         resize(1000, 600);
         setLayoutDirection(Qt::RightToLeft);
 
-        // Styling
-        setStyleSheet(
-            "QWidget { background-color: #f4f6f9; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; }"
-            "QLineEdit { background-color: #ffffff; border: 1px solid #ced4da; border-radius: 4px; padding: 6px; }"
+     // Styling
+        this->setStyleSheet(
+            "QMainWindow, QWidget#centralWidget { background-color: #f4f6f9; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; }"
+            "QLineEdit { background-color: #ffffff; border: 1px solid #ced4da; border-radius: 4px; padding: 6px; color: #000; }"
             "QPushButton { background-color: #0d6efd; color: white; border: none; border-radius: 4px; padding: 6px 14px; font-weight: bold; }"
             "QPushButton:hover { background-color: #0b5ed7; }"
             "QPushButton#saveBtn { background-color: #198754; }"
             "QPushButton#saveBtn:hover { background-color: #157347; }"
-            "QTableWidget { background-color: #ffffff; border: 1px solid #dee2e6; gridline-color: #e9ecef; }"
+            "QTableWidget { background-color: #ffffff; border: 1px solid #dee2e6; gridline-color: #e9ecef; color: #000; }"
             "QHeaderView::section { background-color: #e9ecef; color: #212529; font-weight: bold; border: none; padding: 6px; }"
         );
 
-        QWidget *centralWidget = new QWidget(this);
+      QWidget *centralWidget = new QWidget(this);
+        centralWidget->setObjectName("centralWidget");
+        centralWidget->setAutoFillBackground(true);
+
         QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
         // Network & Supplier Controls Bar
