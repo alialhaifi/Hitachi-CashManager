@@ -7,23 +7,23 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Qt
+    - name: Setup MSVC Compiler
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install Qt 6
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.5.3'
-        arch: 'win64_mingw64'
-
-    - name: Setup MinGW
-      uses: egor-tresin/setup-mingw@v2
+        version: '6.6.0'
+        arch: 'win64_msvc2019_64'
 
     - name: Configure CMake
-      run: cmake -B build -G "MinGW Makefiles"
+      run: cmake -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
 
     - name: Build Project
       run: cmake --build build --config Release
