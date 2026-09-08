@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QDateTime>
 #include <QTcpSocket>
+#include <QHostAddress>
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
@@ -21,10 +22,10 @@ class CashManagerWindow : public QMainWindow {
 public:
     CashManagerWindow(QWidget *parent = nullptr) : QMainWindow(parent) {
         setWindowTitle("Hitachi iH-110 - نظام متابعة واعتتماد الأرقام التسلسلية");
-        resize(1000, 600);
+        resize(1050, 650);
         setLayoutDirection(Qt::RightToLeft);
 
-     // Styling
+        // التنسيق والتصميم (Styling)
         this->setStyleSheet(
             "QMainWindow, QWidget#centralWidget { background-color: #f4f6f9; font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; }"
             "QLineEdit { background-color: #ffffff; border: 1px solid #ced4da; border-radius: 4px; padding: 6px; color: #000; }"
@@ -36,22 +37,22 @@ public:
             "QHeaderView::section { background-color: #e9ecef; color: #212529; font-weight: bold; border: none; padding: 6px; }"
         );
 
-      QWidget *centralWidget = new QWidget(this);
+        QWidget *centralWidget = new QWidget(this);
         centralWidget->setObjectName("centralWidget");
         centralWidget->setAutoFillBackground(true);
 
         QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
-        // Network & Supplier Controls Bar
+        // 1. شريط الشبكة وإدخال بيانات المورد
         QHBoxLayout *topLayout = new QHBoxLayout();
 
         QLabel *ipLabel = new QLabel("عنوان IP الآلة:");
-        ipInput = new QLineEdit("192.168.1.150");
-        ipInput->setFixedWidth(120);
+        ipInput = new QLineEdit("10.108.48.50");
+        ipInput->setFixedWidth(110);
 
-        QLabel *portLabel = new QLabel("المنفذ (Port):");
-        portInput = new QLineEdit("8000");
-        portInput->setFixedWidth(60);
+        QLabel *portLabel = new QLabel("المنفذ:");
+        portInput = new QLineEdit("448");
+        portInput->setFixedWidth(50);
 
         connectBtn = new QPushButton("اتصال بالآلة عبر LAN");
 
@@ -67,20 +68,20 @@ public:
         topLayout->addWidget(portLabel);
         topLayout->addWidget(portInput);
         topLayout->addWidget(connectBtn);
-        topLayout->addSpacing(20);
+        topLayout->addSpacing(15);
         topLayout->addWidget(supplierLabel);
         topLayout->addWidget(supplierInput);
         topLayout->addWidget(saveBtn);
 
         mainLayout->addLayout(topLayout);
 
-        // Status Banner
-        statusLabel = new QLabel("جاهز للعد واستقبال البيانات...");
+        // 2. شريط حالة الاتصال المرئي
+        statusLabel = new QLabel("🔴 غير متصل بالآلة");
         statusLabel->setAlignment(Qt::AlignCenter);
-        statusLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #495057; padding: 8px; background-color: #e2e3e5; border-radius: 4px;");
+        statusLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #842029; background-color: #f8d7da; padding: 8px; border-radius: 4px;");
         mainLayout->addWidget(statusLabel);
 
-        // Table
+        // 3. جدول البيانات والعد
         tableWidget = new QTableWidget(0, 5);
         tableWidget->setHorizontalHeaderLabels({"التاريخ والوقت", "الرقم التسلسلي / البيانات", "حالة الورقة", "قرار المستخدم / الأرشفة", "اسم المورد"});
         tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -88,22 +89,30 @@ public:
 
         setCentralWidget(centralWidget);
 
-        // Networking
+        // 4. إعداد الاتصال الشبكي (QTcpSocket)
         socket = new QTcpSocket(this);
+
         connect(connectBtn, &QPushButton::clicked, this, &CashManagerWindow::toggleConnection);
         connect(socket, &QTcpSocket::readyRead, this, &CashManagerWindow::readSocketData);
+        connect(saveBtn, &QPushButton::clicked, this, &CashManagerWindow::saveAndNotify);
+
         connect(socket, &QTcpSocket::connected, this, [this]() {
-            statusLabel->setText("متصل بنجاح بآلة العد - بانتظار مرور الأوراق النقدية");
+            statusLabel->setText("🟢 متصل بنجاح بآلة العد (Hitachi iH-110) - بانتظار مرور الأوراق النقدية");
             statusLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #0f5132; background-color: #d1e7dd; padding: 8px; border-radius: 4px;");
             connectBtn->setText("قطع الاتصال");
         });
+
         connect(socket, &QTcpSocket::disconnected, this, [this]() {
-            statusLabel->setText("غير متصل بالآلة");
+            statusLabel->setText("🔴 تم قطع الاتصال بالآلة");
             statusLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #842029; background-color: #f8d7da; padding: 8px; border-radius: 4px;");
             connectBtn->setText("اتصال بالآلة عبر LAN");
         });
 
-        connect(saveBtn, &QPushButton::clicked, this, &CashManagerWindow::saveAndNotify);
+        connect(socket, &QAbstractSocket::errorOccurred, this, [this](QAbstractSocket::SocketError) {
+            statusLabel->setText("🔴 فشل الاتصال بالآلة: " + socket->errorString());
+            statusLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #842029; background-color: #f8d7da; padding: 8px; border-radius: 4px;");
+            connectBtn->setText("إعادة المحاولة");
+        });
     }
 
 private slots:
@@ -111,7 +120,9 @@ private slots:
         if (socket->state() == QAbstractSocket::ConnectedState) {
             socket->disconnectFromHost();
         } else {
-            socket->connectToHost(ipInput->text(), portInput->text().toUShort());
+            statusLabel->setText("⏳ جاري الاتصال بالآلة...");
+            statusLabel->setStyleSheet("font-size: 14px; font-weight: bold; color: #664d03; background-color: #fff3cd; padding: 8px; border-radius: 4px;");
+            socket->connectToHost(ipInput->text().trimmed(), portInput->text().trimmed().toUShort());
         }
     }
 
