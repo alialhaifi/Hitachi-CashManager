@@ -8,11 +8,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+# 1. استدعاء مكتبات Qt6 المطلوبة بما فيها مكتبة Network
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network)
 
 set(ICON_FILE "app_icon.ico")
 
-# التحقق من وجود ملف الأيقونة لمنع فشل البناء
+# 2. التحقق من وجود ملف الأيقونة وتضمينه لمنع فشل البناء
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${ICON_FILE}")
     if(WIN32)
         set(RC_FILE "${CMAKE_CURRENT_BINARY_DIR}/app_icon.rc")
@@ -25,8 +26,10 @@ else()
     set(APP_SOURCES main.cpp)
 endif()
 
+# 3. إنشاء الملف التنفيذي
 add_executable(CashManager ${APP_SOURCES})
 
+# 4. ربط مكتبات Qt6 بالتطبيق (تتضمن Qt6::Network)
 target_link_libraries(CashManager PRIVATE
     Qt6::Core
     Qt6::Gui
@@ -34,5 +37,5 @@ target_link_libraries(CashManager PRIVATE
     Qt6::Network
 )
 
-# إخفاء النافذة السوداء في ويندوز
+# 5. إخفاء الشاشة السوداء (Console) عند تشغيل البرنامج في ويندوز
 set_target_properties(CashManager PROPERTIES WIN32_EXECUTABLE TRUE)
